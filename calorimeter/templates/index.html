@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calorimeter Comparison Dashboard — Walton R&I</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">W</div>
+    <div class="brand-text">
+      <h1>Calorimeter Comparison Dashboard</h1>
+      <span>Compressor R&amp;I &middot; Walton Hi-Tech Industries PLC</span>
+    </div>
+  </div>
+  <div class="topbar-actions">
+    <button id="exportXlsx" class="btn btn-ghost" disabled>Export XLSX</button>
+    <button id="exportPdf" class="btn btn-ghost" disabled>Export PDF</button>
+    <button id="themeToggle" class="btn btn-icon" title="Toggle theme">&#9788;</button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR: parameter selection -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <h3>Data Source</h3>
+      <label class="folder-picker">
+        <input type="file" id="folderInput" webkitdirectory directory multiple hidden>
+        <span id="folderLabel">Select main folder&hellip;</span>
+      </label>
+      <p class="hint">Point to the folder containing one subfolder per Compressor ID (e.g. ID-7338.01), each holding its RPM test report PDFs.</p>
+      <div id="uploadStatus" class="upload-status"></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-header-row">
+        <h3>Parameters</h3>
+        <div class="mini-actions">
+          <button id="selAll" class="link-btn">All</button>
+          <button id="selNone" class="link-btn">None</button>
+        </div>
+      </div>
+      <div id="paramList" class="param-list">
+        {% for key in param_order %}
+        <label class="param-item">
+          <input type="checkbox" class="param-check" value="{{ key }}" checked>
+          <span>{{ param_meta[key].label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <section id="emptyState" class="empty-state">
+      <div class="empty-icon">&#9881;</div>
+      <h2>No test reports loaded yet</h2>
+      <p>Select the main folder on the left to parse and compare calorimeter reports across compressor IDs.</p>
+    </section>
+
+    <section id="kpiRow" class="kpi-row" style="display:none;">
+      <div class="kpi-card">
+        <span class="kpi-label">Reports Analyzed</span>
+        <span class="kpi-value" id="kpiTotal">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Compressor IDs</span>
+        <span class="kpi-value" id="kpiIds">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">RPM Tiers</span>
+        <span class="kpi-value" id="kpiTiers">0</span>
+      </div>
+      <div class="kpi-card">
+        <span class="kpi-label">Avg COP</span>
+        <span class="kpi-value" id="kpiAvgCop">&mdash;</span>
+      </div>
+      <div class="kpi-card accent">
+        <span class="kpi-label">Best COP</span>
+        <span class="kpi-value" id="kpiMaxCop">&mdash;</span>
+      </div>
+    </section>
+
+    <section id="tablesContainer" class="tables-container"></section>
+
+    <section id="chartsSection" class="charts-section" style="display:none;">
+      <h2 class="section-title">Sample-wise Trends <span>How COP, Cooling Capacity &amp; Input Power vary across compressor IDs within each RPM tier</span></h2>
+      <div id="chartsContainer"></div>
+    </section>
+
+  </main>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
