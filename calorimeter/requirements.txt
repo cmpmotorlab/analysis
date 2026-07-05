@@ -5,3 +5,4 @@ reportlab==4.2.5
 Werkzeug==3.0.4
 matplotlib==3.9.2
 Pillow==10.4.0
+gunicorn
